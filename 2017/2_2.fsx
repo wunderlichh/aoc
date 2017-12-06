@@ -72,7 +72,7 @@ let input = [|
             [|3021;3407;218;1043;449;214;1594;3244;3097;286;114;223;1214;3102;257;3345|]
             |]
 
-let tinput = [|
+let testInput = [|
              [|5; 9; 2; 8|]
              [|9; 4; 7; 3|]
              [|3; 8; 6; 5|]
@@ -92,5 +92,5 @@ let calcRow (row: int array) : int =
 let checksum spreadsheet = 
     Seq.fold (fun acc row -> acc + (calcRow row)) 0 spreadsheet
 
-printfn "Checksum of %A = %d" tinput (checksum tinput)
+printfn "Checksum of %A = %d" testInput (checksum testInput)
 printfn "Checksum of spreadsheet = %d" (checksum input)

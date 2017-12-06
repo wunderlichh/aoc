@@ -45,7 +45,7 @@ let input = [|
             [|3021;3407;218;1043;449;214;1594;3244;3097;286;114;223;1214;3102;257;3345|]
             |]
 
-let tinput = [|
+let testInput = [|
               [|5;1;9;5|]
               [|7;5;3|]
               [|2;4;6;8|]
@@ -54,5 +54,5 @@ let tinput = [|
 let checksum spreadsheet = 
     Seq.fold (fun acc row -> acc + (Seq.max row - Seq.min row)) 0 spreadsheet
 
-printfn "Checksum of %A = %d" tinput (checksum tinput)
+printfn "Checksum of %A = %d" testInput (checksum testInput)
 printfn "Checksum of spreadsheet = %d" (checksum input)

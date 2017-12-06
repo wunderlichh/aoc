@@ -50,22 +50,27 @@ let sCoordinates (s: int) : (int * int) =
                     ring
 
         let between x1 x2 b =
-            if x1 < x2 then 
-                b >= x1 && b <= x2
-            else
-                b >= x2 && b <= x1
+            if x1 < x2 
+            then b >= x1 && b <= x2
+            else b >= x2 && b <= x1
 
-        let rindWidth = (2 * r) + 1
-        let ringHalf = rindWidth / 2
-        let biggstSquare = rindWidth * rindWidth
+        let ringWidth = (2 * r) + 1
+        let ringHalf = ringWidth / 2
+        let biggstSquare = ringWidth * ringWidth
         let corners = [|biggstSquare; biggstSquare - (2 * ringHalf); biggstSquare - (4 * ringHalf); biggstSquare - (6 * ringHalf)|]
 
-        if Seq.exists ((=) s) corners then (ringHalf, ringHalf)
+        if Seq.exists ((=) s) corners 
+        then (ringHalf, ringHalf)
         else
-            let middleDistancePoints = Seq.map (fun m -> biggstSquare - if m = 0 then ringHalf else ringHalf + (m * (rindWidth - 1))) [0..3]
+            let middleDistancePoints = Seq.map (
+                                            fun m -> 
+                                                biggstSquare - if m = 0 
+                                                               then ringHalf 
+                                                               else ringHalf + (m * (ringWidth - 1))
+                                       ) [0..3]
             
-            let mdpX = [|Seq.min middleDistancePoints; (Seq.min middleDistancePoints) + 2 * (rindWidth - 1)|]
-            let mdpY = [|Seq.max middleDistancePoints; (Seq.max middleDistancePoints) - 2 * (rindWidth - 1)|]
+            let mdpX = [|Seq.min middleDistancePoints; (Seq.min middleDistancePoints) + 2 * (ringWidth - 1)|]
+            let mdpY = [|Seq.max middleDistancePoints; (Seq.max middleDistancePoints) - 2 * (ringWidth - 1)|]
             
             let closestMdpX = if abs (s - (Seq.min mdpY)) < abs (s - (Seq.max mdpY)) then Seq.min mdpY else Seq.max mdpY
             let distanceX = if Seq.exists (fun corner -> between s closestMdpX corner) corners then ringHalf else abs (s - closestMdpX) 
@@ -86,6 +91,7 @@ let steps square =
 printfn "Data from square %d is carried %d steps" 1 (steps 1)
 printfn "Data from square %d is carried %d steps" 12 (steps 12)
 printfn "Data from square %d is carried %d steps" 23 (steps 23)
+printfn "Data from square %d is carried %d steps" 1024 (steps 1024)
 
 printfn "#####################################################"
 printfn "      steps (368078) = %d" (steps 368078)
