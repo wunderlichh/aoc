@@ -33,16 +33,60 @@ identified in your puzzle input all the way to the access port?
 Your puzzle input is 368078.
 *)
 
-let tinput1 = 1
-let tinput2 = 12
-let tinput3 = 23
-let tinput4 = 1024
+let sCoordinates (s: int) : (int * int) =
+    if s = 1 then (0, 0)
+    else 
+        let r = if s = 1 then 1
+                else  
+                    let mutable ring = 0
+                    let mutable border = 3
+                    let mutable sqareCount = 1
 
-let md (square: int) : int =
-    // ???
-    0
+                    while sqareCount < s do
+                        sqareCount <- sqareCount + (2 * border + 2 * (border - 2))
+                        border <- border + 2
+                        ring <- ring + 1
 
-printfn "Data from square %d is carried %d steps" tinput1 (md tinput1)
-printfn "Data from square %d is carried %d steps" tinput2 (md tinput2)
-printfn "Data from square %d is carried %d steps" tinput3 (md tinput3)
-printfn "Data from square %d is carried %d steps" tinput4 (md tinput4)
+                    ring
+
+        let between x1 x2 b =
+            if x1 < x2 then 
+                b >= x1 && b <= x2
+            else
+                b >= x2 && b <= x1
+
+        let rindWidth = (2 * r) + 1
+        let ringHalf = rindWidth / 2
+        let biggstSquare = rindWidth * rindWidth
+        let corners = [|biggstSquare; biggstSquare - (2 * ringHalf); biggstSquare - (4 * ringHalf); biggstSquare - (6 * ringHalf)|]
+
+        if Seq.exists ((=) s) corners then (ringHalf, ringHalf)
+        else
+            let middleDistancePoints = Seq.map (fun m -> biggstSquare - if m = 0 then ringHalf else ringHalf + (m * (rindWidth - 1))) [0..3]
+            
+            let mdpX = [|Seq.min middleDistancePoints; (Seq.min middleDistancePoints) + 2 * (rindWidth - 1)|]
+            let mdpY = [|Seq.max middleDistancePoints; (Seq.max middleDistancePoints) - 2 * (rindWidth - 1)|]
+            
+            let closestMdpX = if abs (s - (Seq.min mdpY)) < abs (s - (Seq.max mdpY)) then Seq.min mdpY else Seq.max mdpY
+            let distanceX = if Seq.exists (fun corner -> between s closestMdpX corner) corners then ringHalf else abs (s - closestMdpX) 
+            
+            let closestMdpY = if abs (s - (Seq.min mdpX)) < abs (s - (Seq.max mdpX)) then Seq.min mdpX else Seq.max mdpX        
+            let distanceY = if Seq.exists (fun corner -> between s closestMdpY corner) corners then ringHalf else abs (s - closestMdpY) 
+
+            (distanceX, distanceY)
+
+let manhattanDistance (a1, a2)  (b1, b2) = 
+    abs (a1 - b1) + abs (a2 - b2)
+
+let md00 = manhattanDistance (0, 0)
+
+let steps square =
+    square |> sCoordinates |> md00
+
+printfn "Data from square %d is carried %d steps" 1 (steps 1)
+printfn "Data from square %d is carried %d steps" 12 (steps 12)
+printfn "Data from square %d is carried %d steps" 23 (steps 23)
+
+printfn "#####################################################"
+printfn "      steps (368078) = %d" (steps 368078)
+printfn "#####################################################"
