@@ -562,4 +562,4 @@ let checkPassphrase acc (sentence: string) =
 
     if isInvalid then acc else acc + 1
 
-printfn "Valid passphrases = %d" (Seq.fold checkPassphrase 0 (input.Split( '\r', '\n')))
+printfn "Valid passphrases = %d" (Seq.fold checkPassphrase 0 (input.Split('\r', '\n')))
