@@ -40,7 +40,47 @@ Here are other example situations:
 
 Starting with a frequency of zero, what is the resulting frequency after all of the changes in frequency have been applied?
 
-*)
+all of the changes in frequency have been applied?
 
-let input = System.IO.File.ReadAllLines "2018\\1_1.input.txt"
-let answer = Seq.sumBy int input
+Your puzzle answer was 536.
+
+The first half of this puzzle is complete! It provides one gold star: *
+
+--- Part Two ---
+You notice that the device repeats the same frequency change list over and over. 
+To calibrate the device, you need to find the first frequency it reaches twice.
+
+For example, using the same list of changes above, the device would loop as follows:
+
+Current frequency  0, change of +1; resulting frequency  1.
+Current frequency  1, change of -2; resulting frequency -1.
+Current frequency -1, change of +3; resulting frequency  2.
+Current frequency  2, change of +1; resulting frequency  3.
+(At this point, the device continues from the start of the list.)
+Current frequency  3, change of +1; resulting frequency  4.
+Current frequency  4, change of -2; resulting frequency  2, which has already been seen.
+In this example, the first frequency reached twice is 2. Note that your device might 
+need to repeat its list of frequency changes many times before a duplicate frequency is found, 
+and that duplicates might be found while in the middle of processing the list.
+
+Here are other examples:
+
++1, -1 first reaches 0 twice.
++3, +3, +4, -2, -4 first reaches 10 twice.
+-6, +3, +8, +5, -6 first reaches 5 twice.
++7, +7, -2, -7, -4 first reaches 14 twice.
+What is the first frequency your device reaches twice?
+
+*)
+let input = 
+    System.IO.File.ReadAllLines "2018\\1_1.input.txt" 
+    |> Array.map int
+
+let rec step (acc: int) (vals: int array) (idx: int) (prev: int list) : int =
+    let i = if idx >= Array.length vals then 0 else idx
+    let n = acc + vals.[i]
+    if List.exists (fun v -> v = n) prev 
+        then n
+        else step n vals (i + 1) (n :: prev)
+
+step 0 input 0 []
