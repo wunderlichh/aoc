@@ -43,4 +43,4 @@ Starting with a frequency of zero, what is the resulting frequency after all of 
 Your puzzle answer was 536.
 *)
 
-System.IO.File.ReadAllLines "2018\\1_1.input.txt" |> Seq.sumBy int
+System.IO.File.ReadAllLines "2018\\1.input.txt" |> Seq.sumBy int

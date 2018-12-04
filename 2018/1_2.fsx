@@ -1,6 +1,4 @@
 (*
---- Day 1: Chronal Calibration ---
-
 --- Part Two ---
 You notice that the device repeats the same frequency change list over and over. 
 To calibrate the device, you need to find the first frequency it reaches twice.
@@ -36,7 +34,7 @@ let rec findFrequency (acc: int) (idx: int) (prev: int list) (values: int array)
         then next
         else findFrequency next (i + 1) (next :: prev) values
 
-System.IO.File.ReadAllLines "2018\\1_1.input.txt" 
+System.IO.File.ReadAllLines "2018\\1.input.txt" 
 |> Array.map int
 |> findFrequency 0 0 []
     
