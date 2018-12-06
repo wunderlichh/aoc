@@ -53,6 +53,19 @@ If the Elves all proceed with their own plans, none of them will have enough fab
 square inches of fabric are within two or more claims?
 
 Your puzzle answer was 109143.
+
+--- Part Two ---
+
+Amidst the chaos, you notice that exactly one claim doesn't overlap by even a single square inch 
+of fabric with any other claim. If you can somehow draw attention to it, maybe the Elves will 
+be able to make Santa's suit after all!
+
+For example, in the claims above, only claim 3 is intact after all claims are made.
+
+What is the ID of the only claim that doesn't overlap?
+
+Your puzzle answer was 506.
+
 *)
 
 type Claim = {
@@ -92,14 +105,18 @@ let markPosition (map: int[,]) claim =
             map.[x, y] <- map.[x, y] + 1
     map
 
-let sumOverlapp (map: int[,]) =
-    let mutable state = 0
-    for x in 0 .. Array2D.length1 map - 1 do
-        for y in 0 .. Array2D.length2 map - 1 do
-            state <- if map.[x, y] >= 2 then state + 1 else state
-    state
+let check (claim: Claim) (fabric: int[,]) : bool =
+    let mutable allOne = true
+    for i in [0..(claim.Height - 1)] do
+        for j in [0..(claim.Width - 1)] do
+            let x = i + claim.Top
+            let y = j + claim.Left  
+            if fabric.[x, y] <> 1 then allOne <- false
+    allOne
 
-System.IO.File.ReadAllLines "2018\\3.input.txt"
-|> Seq.map parseClaim
-|> Seq.fold markPosition (Array2D.init 2000 2000 (fun _ _ -> 0)) 
-|> sumOverlapp
+let claims = System.IO.File.ReadAllLines "2018\\3.input.txt" |> Seq.map parseClaim
+
+claims 
+|> Seq.fold markPosition (Array2D.init 2000 2000 (fun _ _ -> 0))
+|> (fun fabric -> claims |> Seq.filter (fun c -> check c fabric))
+|> Seq.head
