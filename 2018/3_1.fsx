@@ -51,18 +51,20 @@ to the others, does not overlap either of them.)
 
 If the Elves all proceed with their own plans, none of them will have enough fabric. How many 
 square inches of fabric are within two or more claims?
+
+Your puzzle answer was 109143.
 *)
 
-let testInput = "#1 @ 1,3: 4x4
-#2 @ 3,1: 4x4
-#3 @ 5,5: 2x2"
+type Position = {
+    Top: int;
+    Left: int
+}
 
 type Claim = {
     Id: int;
-    Top: int;
-    Left: int;
     Width: int;
-    Height: int
+    Height: int;
+    Position: Position
 }
 
 let extract (s: string) (separator: char) =
@@ -70,7 +72,7 @@ let extract (s: string) (separator: char) =
     | [|a; b|] -> (int a, int b)
     | _ -> failwith "argument" 
 
-let parse (input: string) =
+let parseClaim (input: string) =
     let aIdx = input.IndexOf "@"
     let cIdx = input.IndexOf ":"
     let idPart = input.[1..(aIdx - 1)]
@@ -79,9 +81,31 @@ let parse (input: string) =
     let location = extract loPart ','
     let size     = extract siPart 'x'
     {
-        Id      = int idPart;
-        Top     = fst location;
-        Left    = snd location;
-        Width   = fst size;
-        Height  = snd size
+        Id = int idPart;
+        Width = fst size;
+        Height = snd size;
+        Position = {
+            Top = snd location;
+            Left = fst location;
+        }
     }
+
+let markPosition (map: int[,]) claim =
+    for i in [0..(claim.Height - 1)] do
+        for j in [0..(claim.Width - 1)] do
+            let x = i + claim.Position.Top
+            let y = j + claim.Position.Left  
+            map.[x, y] <- map.[x, y] + 1
+    map
+
+let sumOverlapp (map: int[,]) =
+    let mutable state = 0
+    for x in 0 .. Array2D.length1 map - 1 do
+        for y in 0 .. Array2D.length2 map - 1 do
+            state <- if map.[x, y] >= 2 then state + 1 else state
+    state
+
+System.IO.File.ReadAllLines "2018\\3.input.txt"
+|> Seq.map parseClaim
+|> Seq.fold markPosition (Array2D.init 2000 2000 (fun _ _ -> 0)) 
+|> sumOverlapp
