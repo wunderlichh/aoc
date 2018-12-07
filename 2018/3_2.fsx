@@ -68,6 +68,8 @@ Your puzzle answer was 506.
 
 *)
 
+open System.Text.RegularExpressions
+
 type Claim = {
     Id: int;
     Width: int;
@@ -76,26 +78,15 @@ type Claim = {
     Left: int
 }
 
-let extract (s: string) (separator: char) =
-    match s.Split(separator) with
-    | [|a; b|] -> (int a, int b)
-    | _ -> failwith "argument" 
-
 let parseClaim (input: string) =
-    let aIdx = input.IndexOf "@"
-    let cIdx = input.IndexOf ":"
-    let idPart = input.[1..(aIdx - 1)]
-    let loPart = input.[(aIdx + 2)..(cIdx - 1)]
-    let siPart = input.[cIdx + 1..]
-    let location = extract loPart ','
-    let size     = extract siPart 'x'
-    {
-        Id = int idPart;
-        Width = fst size;
-        Height = snd size;
-        Top = snd location;
-        Left = fst location;
-    }
+    match Regex("^#(\d+)\s@\s(\d+),(\d+):\s(\d+)x(\d+)$").Match input with
+    | m when m.Success ->
+        Some({ Id = int m.Groups.[1].Value;
+               Width = int m.Groups.[4].Value;
+               Height = int m.Groups.[5].Value;
+               Top = int m.Groups.[3].Value;
+               Left = int m.Groups.[2].Value})
+    | _ -> None
 
 let markPosition (map: int[,]) claim =
     for i in [0..(claim.Height - 1)] do
@@ -114,7 +105,9 @@ let check (claim: Claim) (fabric: int[,]) : bool =
             if fabric.[x, y] <> 1 then allOne <- false
     allOne
 
-let claims = System.IO.File.ReadAllLines "2018\\3.input.txt" |> Seq.map parseClaim
+let claims = System.IO.File.ReadAllLines "2018\\3.input.txt" 
+             |> Seq.map parseClaim 
+             |> Seq.choose id
 
 claims 
 |> Seq.fold markPosition (Array2D.init 2000 2000 (fun _ _ -> 0))
